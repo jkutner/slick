@@ -89,7 +89,7 @@ class HoistClientOps extends Phase {
           "Caught exception while computing default value for Rep[Option[_]].getOrElse -- "+
             "This cannot be done lazily when the value is needed on the database side", ex)
       }
-      Library.IfNull.typed(tpe, ch2, LiteralNode.apply(tpe, d))
+      Library.IfNull.typed(tpe, ch2, LiteralNode.apply(tpe, d)).infer()
     case n => n.mapChildren(rewriteDBSide, keepType = true)
   }
 

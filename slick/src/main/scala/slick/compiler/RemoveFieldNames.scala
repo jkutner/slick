@@ -16,11 +16,11 @@ class RemoveFieldNames extends Phase {
       val refTSyms = n.collect[TypeSymbol] { case Select(_ :@ NominalType(s, _), _) => s }.toSet
       val allTSyms = n.collect[TypeSymbol] { case Pure(_, _) :@ CollectionType(_, NominalType(ts, _)) => ts }.toSet
       val unrefTSyms = allTSyms -- refTSyms
-      def tr(n: Node): Node =  n.replace({
+      def tr(n: Node): Node =  n.replace {
         case (p @ Pure(s: StructNode, pts)) :@ CollectionType(_, NominalType(ts, _)) if unrefTSyms contains ts =>
           val ch2 = s.children.map(tr)
           Pure(if(ch2.length == 1 && ts != top) ch2(0) else ProductNode(ch2), pts).infer()
-      }, retype = true)
+      }.infer()
       tr(n)
     })
     logger.debug("Transformed RSM: ", rsm2)
